@@ -49,7 +49,7 @@ Este dataset está formado 27 variables y 1259 observaciones. Estas variables son
 
 **9. work_interfere**: ¿Si tiene una enfermedad mental, siente que interfiere con su trabajo?
 
-**10.no_employees**: ¿número de empleados. ¿Cuántos empleados tiene su compañía u organización?
+**10.no_employees**: número de empleados. ¿Cuántos empleados tiene su compañía u organización?
 
 **11.remote_work**: ¿realiza teletrabajo (fuera de la oficina) al menos el 50% del tiempo?
 
@@ -91,7 +91,7 @@ Para realizar un trabajo de forma correcta, el trabajador debe estar en situació
 
 Teniendo en cuenta que la Organización Mundial de la Salud informa que la salud mental no más que una actitud de bienestar para que la persona sea capaz de desarrollar sus capacidades, de afrontar el estrés del día a día, que en su trabajo se observe una productividad y que sea capaz de aportar a la comunidad. Luego mirándolo de forma positiva, la salud mental es el pilar de un funcionamiento correcto tanto a nivel individual como a nivel comunidad.
 
-No hay que olvidar que durante nuestro día a día nos encontramos con diferentes situaciones tanto a nivel persona como laboral que nos provocan estrés, esto está dentro de unos baremos de la normalidad y en ningún caso debe considerarse como un problema a tratar.
+No hay que olvidar que durante nuestro día a día nos encontramos con diferentes situaciones tanto a nivel personal como laboral que nos provocan estrés, esto está dentro de unos baremos de la normalidad y en ningún caso debe considerarse como un problema a tratar.
 
 El hecho de sentir estrés no es malo, siempre y cuando sea en unas cantidades que nos permitan en todo momento tener un nivel de sensatez mental adecuado y un positivo rendimiento a nivel de conducta como cognitivo. Se afirma que el estrés agudo, de poca duración, pone en predisposición el cerebro para un mejor rendimiento.
 
@@ -107,6 +107,7 @@ Pretendemos por tanto con ello responder a la siguiente pregunta/problema: ¿se t
 Por las variables existentes en el conjunto de datos y a partir de estas preguntas previas, deducimos que hay dos aspectos que se podrían tratar: la existencia de enfermedad mental, y las actitudes hacia ésta por las personas en el puesto de trabajo. Nosotros nos centraremos en el segundo aspecto, buscando respuestas en cuanto al trato (o consideración) de igualdad (o no) entre enfermedades físicas y enfermedades mentales.
 
 No debemos olvidar que todo proyecto analítico en ciencia de datos tiene las siguientes fases:
+
 1. Se trata de encontrar la cuestión que deseamos resolver.
 
 2. Consiste en la recodia y almacenamiento de los datos. Conocer de dónde se han extraído los datos y el formato de almacenamiento.
@@ -241,7 +242,9 @@ sapply(surveyMentalHealth,class)
 Es habitual que R no asigne adecuadamente el tipo de variable estadística a las diferentes variables en estudio. Pero este no es el caso. El tipo de variable estadística esta adecuadamente definido.
   
 No debemos olvidar que la transformación entre los diferentes tipos de datos es una labor ineludible en la limpieza de datos. Hay que tener siempre en mente que esta transformaciones conllevan un riesgo principal, que no es otro que la perdida de datos al transformar un tipo de dato en otro. Recordemos que los principales factores que dan lugar a esta situación son:
+
 -Mismo tipo de dato con transformación en diferente tamaño.
+
 -Transformación con cota de exactitud diferente.
 
 En el caso que nos ocupa todas las variables están definidas de forma correcta.
@@ -360,7 +363,7 @@ table(is.na(surveyMentalHealth$mental_vs_physical))
 ```{r}
 table(is.na(surveyMentalHealth$obs_consequence))
 ```
-Podemos concluir que las únicas variables que contienen los valores vacios son *self_employed* con un total de 18 (valor TRUE) y  *work_interfere* con 254 (Valor TRUE).
+Podemos concluir que las únicas variables que contienen los valores vacios son *self_employed* con un total de 18 (valor TRUE) y  *work_interfere* con 264 (Valor TRUE).
 
 Comprobamos si la unica variable cuantitativa, *Age* posee valor cero
 
@@ -373,6 +376,7 @@ Por tanto podemos concluir que la variable *Age* no posee datos cero.
 Se entiende por dato atípico como una observación fuera de la normalidad de la variable, una observación con una desviación tan grande de las otras observaciones que incluso podemos poner en duda si ha sido producido por los mismos mecanismos que las anteriores. El punto en común es lo alejado que esta del resto de las observaciones de la variable. 
 
 Los motivos por los cuales aparecen los datos atípicos pueden ser:
+
 1.Outliers o datos atípicos cuyo origen está en la equivocación de los datos.
 
 2.Valores atípicos u outliers con un propósito.
@@ -808,16 +812,15 @@ barplot(table(surveyMentalHealth_clean$obs_consequence),
 ```
 
 Vamos a investigar:
--El hecho de recibir tratamiento tiene algo que ver con la edad, es decir, si existen diferencias en la variable Age según la variable treatment (Tratamiento)
+
+-El hecho de recibir tratamiento tiene algo que ver con la edad, es decir, si existen diferencias en la variable Age según la variable treatment (Tratamiento).
+
 -Dependiendo de la edad del individuo como percibe este el hecho de que la organización de igual importancia a la salud mental vs salud física, es decir, si existen diferencias en la variable Age según la variable mental_vs_physical
 
 
 El analisis de la normalidad o contrastes de normalidad, investigan cuanto de lejos esta la distribución de los valores observados con respecto a una distribución normal con la misma media y desviación típica.
 Para este analisis inicialmente podemos realizar unos estudios de manera gráfica.
 Vamos a comenzar observando si existe diferencias significativa según la edad del individuo para pensar que la organización da igual importancia a la salud mental o a la salud fisica.
-Por lo tanto, tenemos un conjunto de la variable edad donde consideran que la organizacion da mayor importancia a la salud mental vs salud fisica y otro conjunto de la variable edad donde consideran que la organización no da mayor importancia a la salud mental vs salud fisica.
-Comencemos con el analisis de la normalidad. 
-
 
 
 Cálculo de la media
@@ -863,12 +866,16 @@ hist(surveyMentalHealth_clean$Age ,main="Edad individuos Observados",
 Obtenemos de los datos observados en el histograma
 
 Los valores utilizados para dibujar el histograma son:
+
 $breaks Información de los extremos de los intervalos
+
 $counts Información de las frecuencias absolutas
+
 $mids Información de los valores de las marcas de las clases (puntos medios)
 
+
 ```{r}
-hh_Age<-hist(surveyMentalHealth_clean$Age ,main="Edad individuos con Observados",
+hh_Age<-hist(surveyMentalHealth_clean$Age ,main="Edad individuos Observados",
      breaks=k_Age, col="blue")
 hh_Age
 ```
@@ -879,7 +886,7 @@ Superponemos la gráfica de la función de la densidad
 ```{r}
 #Calculo de la función de densidad
 den_Age<- density(surveyMentalHealth_clean$Age)
-plot(den_Age ,main="Edad Individuos con Observados")
+plot(den_Age ,main="Edad Individuos Observados")
 polygon(den_Age , col="blue", border="red")
 
 ```
@@ -888,7 +895,7 @@ polygon(den_Age , col="blue", border="red")
 
 ```{r}
 #Superposición de las gráficas
-hist(surveyMentalHealth_clean$Age ,main="Edad individuos con Observados",
+hist(surveyMentalHealth_clean$Age ,main="Edad individuos Observados",
      col="gold",freq=FALSE)
 lines(den_Age,col="blue",lwd=4)
 ```
@@ -949,14 +956,14 @@ Age_Trans<-(sqrt(sqrt(1/surveyMentalHealth_clean$Age)))
 ```{r}
 #Calculo de la función de densidad
 den_Age_Trans<- density(Age_Trans)
-plot(den_Age_Trans ,main="Densidad de la edad de los individuos observados")
+plot(den_Age_Trans ,main="Edad de los individuos observados")
 polygon(den_Age_Trans , col="blue", border="red")
 
 ```
 
 ```{r}
 #Superposición de las gráficas
-hist(Age_Trans ,main="Histograma y densidad del valor de la edad de los individuos observados",
+hist(Age_Trans ,main="Edad de los individuos observados",
      col="gold",freq=FALSE)
 lines(den_Age_Trans ,col="blue",lwd=4)
 ```
@@ -998,12 +1005,14 @@ Age_Desconoce<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$men
 bartlett.test(list(Age_Mental,Age_Fisica,Age_Desconoce))
 ```
 
-Podemos concluir que el test no haya diferencias significativas entre las varianzas de los dos grupos.
+Podemos concluir que el test no haya diferencias significativas entre las varianzas de los tres grupos.
+
 
 ```{r}
 ggplot(surveyMentalHealth_clean, aes(x = mental_vs_physical, y = Age, colour =mental_vs_physical)) + geom_boxplot() + theme_bw()
 ```
 Vamos a continuar observando si existe diferencias significativa según la edad del individuo de haber recibido o no tratamiento.
+
 Omitimos el analisis de normalidad para la varible Age ya que se ha realizado anteriormente.
 A continuación estudiamos la homogeneidad de la varianza u homocedasticidad.
 ```{r}
@@ -1014,6 +1023,7 @@ Age_NTratamiento<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$
 ```{r}
 bartlett.test(list(Age_Tratamiento,Age_NTratamiento))
 ```
+
 Podemos concluir que si hay diferencias significativas entre las varianzas de los dos grupos.
 
 ```{r}
@@ -1027,7 +1037,7 @@ En el caso de la edad de los individuos teniendo en cuenta si han recibido trata
 ```{r}
 kruskal.test(Age~ treatment, data=surveyMentalHealth_clean)
 ```
-Como el p-value es menor de 0.05 podemos concluir que no hay diferencias significativas entre el hecho de haber tenido o no tratamiento relacionado con la salud mental.
+Como el p-value es menor de 0.05 podemos concluir que hay diferencias significativas entre el hecho de haber tenido o no tratamiento relacionado con la salud mental.
 
 En el caso de la edad teniendo en cuenta si consideran que la organización da mayor importancia a la salud mental que a la física. Se cumple la asunción de homocedasticidad por este motivo continuamos con el estudio ANOVA de un factor (one-way ANOVA o independent samples ANOVA). 
 
