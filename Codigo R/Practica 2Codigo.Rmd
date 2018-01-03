@@ -575,7 +575,7 @@ hist(surveyMentalHealth_clean$Age ,main="Edad individuos Observados",
 ```
 
 ```{r}
-hh_Age<-hist(surveyMentalHealth_clean$Age ,main="Edad individuos con Observados",
+hh_Age<-hist(surveyMentalHealth_clean$Age ,main="Edad individuos Observados",
      breaks=k_Age, col="blue")
 hh_Age
 ```
@@ -583,14 +583,14 @@ hh_Age
 ```{r}
 #Calculo de la función de densidad
 den_Age<- density(surveyMentalHealth_clean$Age)
-plot(den_Age ,main="Edad Individuos con Observados")
+plot(den_Age ,main="Edad Individuos Observados")
 polygon(den_Age , col="blue", border="red")
 
 ```
 
 ```{r}
 #Superposición de las gráficas
-hist(surveyMentalHealth_clean$Age ,main="Edad individuos con Observados",
+hist(surveyMentalHealth_clean$Age ,main="Edad individuos Observados",
      col="gold",freq=FALSE)
 lines(den_Age,col="blue",lwd=4)
 ```
@@ -620,14 +620,14 @@ Age_Trans<-(sqrt(sqrt(1/surveyMentalHealth_clean$Age)))
 ```{r}
 #Calculo de la función de densidad
 den_Age_Trans<- density(Age_Trans)
-plot(den_Age_Trans ,main="Densidad de la edad de los individuos observados")
+plot(den_Age_Trans ,main="Edad de los individuos Observados")
 polygon(den_Age_Trans , col="blue", border="red")
 
 ```
 
 ```{r}
 #Superposición de las gráficas
-hist(Age_Trans ,main="Histograma y densidad del valor de la edad de los individuos observados",
+hist(Age_Trans ,main="Edad de los individuos Observados",
      col="gold",freq=FALSE)
 lines(den_Age_Trans ,col="blue",lwd=4)
 ```
