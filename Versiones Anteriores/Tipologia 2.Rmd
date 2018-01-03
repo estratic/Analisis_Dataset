@@ -1,0 +1,1428 @@
+---
+title: "PRACTICA 2"
+author: ""
+date: "23 de diciembre de 2017"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+library(knitr)
+
+```
+
+
+```{r}
+library(rockchalk)
+library(nortest)
+library(normtest)
+library(moments)
+library(car)
+library(ggplot2)
+library(dplyr)
+```
+
+# Ejercicio 1
+## Descripcion del dataset ¿Por que es importante y que pregunta/problema pretende responder?
+
+Este dataset está formado 27 variables y 1259 observaciones. Estas variables son:
+
+**1.Timestamp**: momento de presentación de respuestas
+
+**2. Age**: edad
+
+**3. Gender**: género
+
+**4. Country**: país
+
+**5. state**: estado. ¿Si vives en los Estados Unidos, cual es el estado o el territorio donde vives?
+
+**6. self_employed**: auto-empleado. ¿Es autónomo (auto-empleado)?
+
+**7. family_history**: historia familiar. ¿Tiene antecedentes de enfermedad mental en la familia?
+
+**8. treatment**: tratamiento. ¿Ha sido tratado por una enfermedad mental?
+
+**9. work_interfere**: ¿Si tiene una enfermedad mental, siente que interfiere con su trabajo?
+
+**10.no_employees**: ¿número de empleados. ¿Cuántos empleados tiene su compañía u organización?
+
+**11.remote_work**: ¿realiza teletrabajo (fuera de la oficina) al menos el 50% del tiempo?
+
+**12.tech_company**: ¿su empleador primaro es una organización o empresa de tecnología?
+
+**13.benefits**: ¿su empleador provee beneficios de salud mental?
+
+**14.care_options**: ¿conoce las opciones de cuidado mental de la compañía médica que el empleador provee?
+
+**15.wellness_program**: ¿Su empleador ha mencionado alguna vez que tiene un programa de bienestar mental para sus empleados?
+
+**16.seek_help**: ¿Su empleador proporciona recursos para saber más sobre aspectos de salud mental y cómo encontrar ayuda?
+
+**17.anonymity**: ¿Está protegida su privacidad si elige acogerse a ventajas de salud mental o recursos de tratamiento de abusos de substancias?
+
+**18.leave**: ¿Le sería fácil, acogerse a una baja por situación de salud mental?
+
+**19.mental_health_consequence**: ¿Cree que hablar de un aspecto de salud mental con su empleador, tendría consecuencias negativas?
+
+**20.phys_health_consequence**: ¿Cree que hablar de un aspecto de salud física con su empleador, tendría consecuencias negativas?
+
+**21.coworkers**: ¿Estaría dispuesto a hablar con sus compañeros de un aspecto de salud mental?
+
+**22.supervisor**: ¿Estaría dispuesto a hablar con sus supervisores de un aspecto de salud mental?
+
+**23.mental_health_interview**: ¿Mencionaría un aspecto de salud mental con un potencial empleador en una entrevista?
+
+**24.phys_health_interview**: ¿Mencionaría un aspecto de salud física con un potencial empleador en una entrevista?
+
+**25.mental_vs_physical**: ¿Siente que su empleador se toma la salud mental como un aspecto importante de la salud?
+
+**26.obs_consequence**: ¿Ha oido u observado consecuencias negativas para sus compañeros de trabajo que se encuentren en situación de enfermedad mental en su puesto de trabajo?
+
+**27.comments**: comentarios adicionales
+
+El dataset, de 2014 (facilitado por Open Sourcing Mental Illness), procede de una encuesta que mide las actitudes sobre salud mental y la frecuencia de desórdenes mentales en puestos de trabajo extraido en un contexto de Tecnologías de Información. Es de especial interés dado que aspectos como el uso intensivo de las tecnologías de la información está dando lugar también a nuevas enfermedades, también de tipo mental, como así se pone de manifiesto en la literatura (ver, por ejemplo: Gentile, D., Coyne, S., & Bricolo, F.(2012-12-31). Pathological Technology Addictions: What Is Scientifically Known and What Remains to Be Learned. In The Oxford Handbook of Media Psychology: Oxford University Press).
+
+Para realizar un trabajo de forma correcta, el trabajador debe estar en situación de condiciones mentales normales.
+
+Teniendo en cuenta que la Organización Mundial de la Salud informa que la salud mental no más que una actitud de bienestar para que la persona sea capaz de desarrollar sus capacidades, de afrontar el estrés del día a día, que en su trabajo se observe una productividad y que sea capaz de aportar a la comunidad. Luego mirándolo de forma positiva, la salud mental es el pilar de un funcionamiento correcto tanto a nivel individual como a nivel comunidad.
+
+No hay que olvidar que durante nuestro día a día nos encontramos con diferentes situaciones tanto a nivel persona como laboral que nos provocan estrés, esto está dentro de unos baremos de la normalidad y en ningún caso debe considerarse como un problema a tratar.
+
+El hecho de sentir estrés no es malo, siempre y cuando sea en unas cantidades que nos permitan en todo momento tener un nivel de sensatez mental adecuado y un positivo rendimiento a nivel de conducta como cognitivo. Se afirma que el estrés agudo, de poca duración, pone en predisposición el cerebro para un mejor rendimiento.
+
+Si lugar a dudas el estrés lleva a las personas a tener problemas de salud, relaciones insuficientes y una baja productividad laboral. Con lo que conlleva aspectos negativos tanto personalmente como profesionalmente. Visiblemente esto se observa con facilidad ya que el individuo se enfada constantemente con los que están más cerca.
+
+Solamente, en la Unión Europea, las enfermedades relacionadas con los músculos del esqueleto superan al estrés laboral.
+
+Una persona con estrés tiene los siguientes síntomas fatiga, tensión muscular, variación en el apetito, bruxismo, cambios en el estímulo sexual, mareos y dolores de cabeza. Psicológicamente estos factores pueden ser la irritabilidad, nerviosismo, falta de energía y ganas de llorar. 
+
+La cuestión que podemos llegar a responder es si el trato es el mismo laboralmente en la enfermedad física que en la enfermedad mental.
+
+Pretendemos por tanto con ello responder a la siguiente pregunta/problema: ¿se trata de igual modo en el contexto laboral a las enfermedades físicas y mentales?
+Por las variables existentes en el conjunto de datos y a partir de estas preguntas previas, deducimos que hay dos aspectos que se podrían tratar: la existencia de enfermedad mental, y las actitudes hacia ésta por las personas en el puesto de trabajo. Nosotros nos centraremos en el segundo aspecto, buscando respuestas en cuanto al trato (o consideración) de igualdad (o no) entre enfermedades físicas y enfermedades mentales.
+
+No debemos olvidar que todo proyecto analítico en ciencia de datos tiene las siguientes fases:
+1. Se trata de encontrar la cuestión que deseamos resolver.
+
+2. Consiste en la recodia y almacenamiento de los datos. Conocer de dónde se han extraído los datos y el formato de almacenamiento.
+
+3. Limpieza de datos. Los datos son preparados para el análisis. Para ello es muy posible que se produzca eliminaciones, transformaciones, etc.
+
+4. En esta etapa se produce el estudio de los datos y un aprendizaje de forma automática.
+
+5. Aqui nos encontramos con el estudio de establecer la forma visual más eficiente para la represantación de los datos.
+
+6. Resolvemos la cuestión que se planeó en la primera fase del proyecto.
+
+Sin olvidar la peculiaridad y necesidades de cada proyecto, no todos tienen que llevar a cabo las 6 fases anteriormente nombradas de manera estricta y única. A veces es necesario que alguna fase se repita de manera iterativa.
+
+
+
+# Ejercicio 2
+## Limpieza de los datos
+
+Cargamos los datos
+getwd()
+setwd("C:/Users/David&Sonix/Downloads/Tipologia de Datos/Practica 2/Resolucion Final")
+
+
+
+```{r read}
+surveyMentalHealth<-read.csv("survey.csv", sep=",",na.strings = "NA")
+#Mostramos las primeras filas
+head(surveyMentalHealth) 
+```
+
+
+ Procedemos a leer el fichero *survey.csv*. La carga la realizamos mediante *read.csv*, debido a que ,(coma) es el separador de las variables. Los valores perdidos los designamos por *NA*
+ 
+## 2.1 Selección de los datos de interés a analizar ¿Cuáles son los campos más relevantes para responder al problema?
+
+  De las 27 variables que contiene el data set
+  
+**1.Timestamp**
+
+**2. Age**
+
+**3. Gender**
+
+**4. Country**
+
+**5. state**
+
+**6. self_employed**
+
+**7. family_history**
+
+**8. treatment**
+
+**9. work_interfere**
+
+**10.no_employees**
+
+**11.remote_work**
+
+**12.tech_company**
+
+**13.benefits**
+
+**14.care_options**
+
+**15.wellness_program**
+
+**16.seek_help**
+
+**17.anonymity**
+
+**18.leave**
+
+**19.mental_health_consequence**
+
+**20.phys_health_consequence**
+
+**21.coworkers**
+
+**22.supervisor**
+
+**23.mental_health_interview**
+
+**24.phys_health_interview**
+
+**25.mental_vs_physical**
+
+**26.obs_consequence**
+
+**27.comments**
+
+De estas variables, dado que algunas de ellas no son directamente asociadas al objetivo de nuestro trabajo, debido a las razones previamente expuestas, prescindimos de las siguientes 3 variables.
+
+**1.Timestamp**
+
+**5. state**
+
+**27.comments**
+
+
+Así pues, nos quedamos con 24 variables que, a priori, podrían ser útiles para nosotros.
+
+```{r}
+#Eliminación de las variables
+surveyMentalHealth$Timestamp<-NULL
+surveyMentalHealth$state<-NULL
+surveyMentalHealth$comments<-NULL
+#summary(surveyMentalHealth)
+```
+
+```{r}
+colnames(surveyMentalHealth)
+```
+
+Mostramos algunos detalles de los objetos
+```{r str}
+str(surveyMentalHealth) 
+```
+
+Comprobamos que el número de filas o registros cargados son correctos.
+  
+```{r }
+#Número de fila del fichero. 
+nrow(surveyMentalHealth)
+```
+
+Es bueno observar cada una de las características anteriores para saber si el fichero se ha subido adecuadamente.
+
+Observamos el tipo de variable estadística para cada variable.
+
+```{r}
+sapply(surveyMentalHealth,class)
+```
+
+Es habitual que R no asigne adecuadamente el tipo de variable estadística a las diferentes variables en estudio. Pero este no es el caso. El tipo de variable estadística esta adecuadamente definido.
+  
+No debemos olvidar que la transformación entre los diferentes tipos de datos es una labor ineludible en la limpieza de datos. Hay que tener siempre en mente que esta transformaciones conllevan un riesgo principal, que no es otro que la perdida de datos al transformar un tipo de dato en otro. Recordemos que los principales factores que dan lugar a esta situación son:
+-Mismo tipo de dato con transformación en diferente tamaño.
+-Transformación con cota de exactitud diferente.
+
+En el caso que nos ocupa todas las variables están definidas de forma correcta.
+
+En este dataset nos encontramos con un conjunto de variables que son cuantitativas y cualitativas.
+Las cualitativas son las que tienen su origen en caracterísitcas o categorías. Mientras que la variable cuantitativa hace referencia a un valor de naturaleza numérica, estas pueden ser discretas (corresponden a un valor numérico entero) y continuos (toman cualquier valor existente en un intervalo). 
+La forma de analizar estos datos es diferente, la primera de ella es la ordenación, un dato cualitativo no puede ordenarse de manera numérica. 
+Para obtener información de datos cualitativos partimos de distribuciones de frecuencias, en la cual podemos observar el número de veces que sucede una caterogoría o nivel de la variable cualitativa. 
+En variables cuantitativas la distribución de frecuencia nos proporciona una zona visible más espesa donde se establecen el mayor número de observaciones y una zona mas liviana donde nos encontramos con muy pocas observaciones.
+
+En el dataset que nos ocupa la unica variable cuantitativa discreta es *Age* el resto son variables cualitativas.
+
+
+
+##2.2 ¿Los datos contienen ceros o elementos vacios? ¿Y valores extremos? ¿Cómo gestionarás cada uno de estos casos?
+
+Cuando hablamos de un dato cero tenemos siempre en mente una asociación a un valor numérico. No hay que olvidar que si el dato es de carácter numérico el valor cero es el que mejor se adapta.
+
+Un dato vacío existe cuando se carece de observación. Este es de utilidad cuando nos encontramos con cadena de caracteres, si añadimos un espacio en blanco el dato pierde el caracter de vacio.
+
+En el momento de la lectura del fichero hemos especificado *na.strings = "NA"* con lo cual cualquier elemento vacio ha sido rellenado con "NA".
+
+
+Comprobamos que variables tienen datos perdidos
+```{r}
+#En el momento de la lectura del fichero establecemos 
+#que si se encuenta un valor perdido los asigne por NA (na.strings = "NA")
+table(is.na(surveyMentalHealth$Age))
+```
+```{r}
+table(is.na(surveyMentalHealth$Gender))
+```
+```{r}
+table(is.na(surveyMentalHealth$Country ))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$self_employed))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$family_history))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$treatment))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$work_interfere))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$no_employees))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$remote_work))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$tech_company))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$benefits))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$care_options))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$ wellness_program))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$seek_help))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$anonymity))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$leave))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$mental_health_consequence))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$phys_health_consequence))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$coworkers))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$supervisor))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$mental_health_interview))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$phys_health_interview))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$mental_vs_physical))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$obs_consequence))
+```
+Podemos concluir que las únicas variables que contienen los valores vacios son *self_employed* con un total de 18 (valor TRUE) y  *work_interfere* con 254 (Valor TRUE).
+
+Comprobamos si la unica variable cuantitativa, *Age* posee valor cero
+
+```{r}
+surveyMentalHealth$Age[which(surveyMentalHealth$Age==0) ]
+
+```
+Por tanto podemos concluir que la variable *Age* no posee datos cero.
+ 
+Se entiende por dato atípico como una observación fuera de la normalidad de la variable, una observación con una desviación tan grande de las otras observaciones que incluso podemos poner en duda si ha sido producido por los mismos mecanismos que las anteriores. El punto en común es lo alejado que esta del resto de las observaciones de la variable. 
+
+Los motivos por los cuales aparecen los datos atípicos pueden ser:
+1.Outliers o datos atípicos cuyo origen está en la equivocación de los datos.
+
+2.Valores atípicos u outliers con un propósito.
+
+3.Valores atípicos u outliers cuyo origen son errores del muestreo.
+
+4.Valores atípicos u outliers de errores en la estandarización.
+
+5.Valores atípicos u outliers por asumir distribuciones erróneas.
+
+6.Valor atípico u outliers cuyo origen es el muestreo correcto de la población.
+
+7.Outliers o datos atípicos que proporcionan orígenes de nuevas investigaciones.
+ 
+Los datos atípicos pueden tener efectos peligrosos en los diferentes análisis estadísticos que realicemos, con ellos presentes se puede llegar aumentar el error de la varianza y hacer disminuir los resultados de las pruebas estadísticas.
+
+A continuación realizamos un analisis exhaustivo de cada variable. Dentro de este análisis obviamente esta la posibilidad de existencia de datos atipicos y se explicara la forma de gestionarlos.
+
+**Age**
+
+Detectamos gráficamente la posibilidad de tener datos atípicos.
+Mediante una grafica de frecuencia
+```{r}
+barplot(table(surveyMentalHealth$Age))
+```
+
+Como podemos observar en este gráfico tenemos datos atípicos ya que tenemos individuos con edades menores de 16 años e incluso negativas, edad legal desde cuando se puede comenzar a trabajar, mayores de 75 años que corresponde a la edad legal a partir de la cual no se puede trabajar.
+
+```{r}
+datos_atipicos<-subset(surveyMentalHealth[1:1], surveyMentalHealth$Age<16 | surveyMentalHealth$Age>75)
+datos_atipicos
+```
+
+Entendemos que la generación de estos datos atípicos no es otra que una mal grabación de los datos o un error en el momento de la recogida de ellos. Si no tenemos posibilidad de rectificar el dato lo mejor es despreciar estas observaciones.
+```{r}
+surveyMentalHealth_clean_v1<-subset(surveyMentalHealth, surveyMentalHealth$Age>16 & surveyMentalHealth$Age<75)
+nrow(surveyMentalHealth_clean_v1)
+```
+
+Una vez eliminados los datos atípicos de la variable edad y teniendo en cuenta que esta es cuantitativa procedemos a obtener los siguientes datos:
+
+```{r}
+summary(surveyMentalHealth_clean_v1$Age)
+```
+
+```{r}
+boxplot(surveyMentalHealth_clean_v1$Age)
+```
+
+```{r}
+#Media Aritmetica 
+Media_Age<-mean(surveyMentalHealth_clean_v1$Age)
+#Mediana
+Mediana_Age<-median(surveyMentalHealth_clean_v1$Age)
+#Media Recortada
+Media_Recortada_Age<-mean(surveyMentalHealth_clean_v1$Age, trim=0.05)
+#Desviación estándar
+Desviacion_estandar_Age<-sd(surveyMentalHealth_clean_v1$Age)
+#Rango Intercuartilico (RIC)
+RIC_Age<-IQR(surveyMentalHealth_clean_v1$Age)
+#Desviación Absoluta Respecto de la Mediana
+Desviacion_Absoluta_Mediana_Age<-mad(surveyMentalHealth_clean_v1$Age)
+#Tabla 
+kable(rbind(Media_Age,Mediana_Age,Media_Recortada_Age,
+            Desviacion_estandar_Age,RIC_Age,
+            Desviacion_Absoluta_Mediana_Age))
+```
+**Gender**
+
+Esta es una variable cualitativa. Asi que por definición de la variable deberí ahber 2 niveles (Male y Female).
+```{r}
+levels(surveyMentalHealth_clean_v1$Gender)
+```
+Sin embargo, nos encontramos con 49.
+
+Cambiamos sus valores correspondientes por M y F respectivamente. Para aquellos que no es posible determinar, dad la inconcreción de la respuesta, le asignamos NA ("A little about you","Agender","All","Enby","fluid","Genderqueer","Nah","Neuter","non-binary","p","queer","queer/she/they","Trans woman","Trans-female").
+
+```{r}
+surveyMentalHealth_clean_v1$Gender<-as.character(surveyMentalHealth_clean_v1$Gender)
+surveyMentalHealth_clean_v1$Gender<-replace(surveyMentalHealth_clean_v1$Gender,surveyMentalHealth_clean_v1$Gender=="Cis Female"|surveyMentalHealth_clean_v1$Gender=="cis-female/femme"|surveyMentalHealth_clean_v1$Gender=="f"|surveyMentalHealth_clean_v1$Gender=="femail"|surveyMentalHealth_clean_v1$Gender=="Femake"|surveyMentalHealth_clean_v1$Gender=="female"|surveyMentalHealth_clean_v1$Gender=="Female"|surveyMentalHealth_clean_v1$Gender=="Female "|surveyMentalHealth_clean_v1$Gender=="Female (cis)"|surveyMentalHealth_clean_v1$Gender=="Female (trans)"|surveyMentalHealth_clean_v1$Gender=="Woman"|surveyMentalHealth_clean_v1$Gender=="woman","F")
+
+surveyMentalHealth_clean_v1$Gender<-replace(surveyMentalHealth_clean_v1$Gender,surveyMentalHealth_clean_v1$Gender=="Male"|surveyMentalHealth_clean_v1$Gender=="male"|surveyMentalHealth_clean_v1$Gender=="Cis Male"|surveyMentalHealth_clean_v1$Gender=="m"|surveyMentalHealth_clean_v1$Gender=="Mail"|surveyMentalHealth_clean_v1$Gender=="Make"|surveyMentalHealth_clean_v1$Gender=="male leaning androgynous"|surveyMentalHealth_clean_v1$Gender=="Malr"|surveyMentalHealth_clean_v1$Gender=="msle"|surveyMentalHealth_clean_v1$Gender=="ostensibly male, unsure what that really means"|surveyMentalHealth_clean_v1$Gender=="something kinda male?"|surveyMentalHealth_clean_v1$Gender=="Androgyne"|surveyMentalHealth_clean_v1$Gender=="cis male"|surveyMentalHealth_clean_v1$Gender=="Cis Man"|surveyMentalHealth_clean_v1$Gender=="Guy (-ish) ^_^"|surveyMentalHealth_clean_v1$Gender=="maile"|surveyMentalHealth_clean_v1$Gender=="Mal"|surveyMentalHealth_clean_v1$Gender=="Male (CIS)"|surveyMentalHealth_clean_v1$Gender=="Male-ish"|surveyMentalHealth_clean_v1$Gender=="Man"|surveyMentalHealth_clean_v1$Gender=="Male ","M")
+
+surveyMentalHealth_clean_v1$Gender<-replace(surveyMentalHealth_clean_v1$Gender,surveyMentalHealth_clean_v1$Gender=="A little about you"|surveyMentalHealth_clean_v1$Gender=="Agender"|surveyMentalHealth_clean_v1$Gender=="All"|surveyMentalHealth_clean_v1$Gender=="Enby"|surveyMentalHealth_clean_v1$Gender=="fluid"|surveyMentalHealth_clean_v1$Gender=="Genderqueer"|surveyMentalHealth_clean_v1$Gender=="Nah"|surveyMentalHealth_clean_v1$Gender=="Neuter"|surveyMentalHealth_clean_v1$Gender=="non-binary"|surveyMentalHealth_clean_v1$Gender=="p"|surveyMentalHealth_clean_v1$Gender=="queer"|surveyMentalHealth_clean_v1$Gender=="queer/she/they"|surveyMentalHealth_clean_v1$Gender=="Trans woman"|surveyMentalHealth_clean_v1$Gender=="Trans-female",NA)
+
+surveyMentalHealth_clean_v1$Gender<-as.factor(surveyMentalHealth_clean_v1$Gender)
+```
+Ahora comprobamos los niveles de la variable cualitativa Gender
+
+```{r}
+levels(surveyMentalHealth_clean_v1$Gender)
+```
+Recordemos que inicialmente hemos comprobado que esta variable no poseia ningún dato vacio, especificado en el momento de la lectura como NA.
+Seguidamente procederia a eleminar estas valores anteriormente clasificados como NA.
+
+```{r}
+surveyMentalHealth_clean<-subset(surveyMentalHealth_clean_v1, surveyMentalHealth_clean_v1$Gender!="NA")
+nrow(surveyMentalHealth_clean)
+```
+
+***HAY QUE DISCUTIR SI ES LO MAS CORRECTO***
+
+**Country**
+
+```{r}
+levels(surveyMentalHealth_clean$Country)
+summary(surveyMentalHealth_clean$Country)
+```
+```{r}
+barplot(table(surveyMentalHealth_clean$Country), 
+        main="Paises")
+``` 
+
+
+**family_history**
+
+```{r}
+levels(surveyMentalHealth_clean$family_history)
+summary(surveyMentalHealth_clean$family_history)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$family_history), 
+        main="Antecedentes familiares")
+``` 
+**treatment**
+
+```{r}
+levels(surveyMentalHealth_clean$treatment)
+summary(surveyMentalHealth_clean$treatment)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$treatment), 
+        main="Ha sido tratado de alguna enfermedad mental")
+``` 
+
+**work_interfere**
+
+```{r}
+levels(surveyMentalHealth_clean$work_interfere)
+summary(surveyMentalHealth_clean$work_interfere)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$work_interfere), 
+        main="La enfermendad mental interfiere en su trabajo")
+``` 
+
+**no_employees**
+```{r}
+levels(surveyMentalHealth_clean$no_employees)
+summary(surveyMentalHealth_clean$no_employees)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$no_employees), 
+        main="Número de empleados de la compañia u organizacion")
+``` 
+
+**remote_work**
+```{r}
+levels(surveyMentalHealth_clean$remote_work)
+summary(surveyMentalHealth_clean$remote_work)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$remote_work), 
+        main="Teletrabajo al menos el 50% del tiempo")
+``` 
+
+**tech_company**
+```{r}
+levels(surveyMentalHealth_clean$tech_company)
+summary(surveyMentalHealth_clean$tech_company)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$tech_company), 
+        main="La Organización es Tecnologica")
+``` 
+
+**benefits**
+
+```{r}
+levels(surveyMentalHealth_clean$benefits)
+summary(surveyMentalHealth_clean$benefits)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$benefits), 
+        main="La Organizacion provee de beneficios de salud Mental")
+``` 
+
+**care_options**
+```{r}
+levels(surveyMentalHealth_clean$care_options)
+summary(surveyMentalHealth_clean$care_options)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$care_options), 
+        main="Conoce Opciones de cuidado mental de su compañia médica")
+``` 
+
+**wellness_program**
+  
+```{r}
+levels(surveyMentalHealth_clean$wellness_program)
+
+```
+ 
+ 
+```{r}
+summary (surveyMentalHealth_clean$wellness_program)
+
+```
+ 
+
+```{r}
+barplot(table(surveyMentalHealth_clean$wellness_program), 
+        main="Información del conocimiento de programas especificos")
+```
+**seek_help**
+  
+```{r}
+levels(surveyMentalHealth_clean$seek_help)
+```
+
+ 
+ 
+```{r}
+summary (surveyMentalHealth_clean$seek_help)
+
+```
+
+
+```{r}
+barplot(table(surveyMentalHealth_clean$seek_help), 
+        main="Información de recursos y ayuda desde la organización")
+```
+
+**anonymity**
+  
+```{r}
+levels(surveyMentalHealth_clean$anonymity)
+```
+
+ 
+```{r}
+summary (surveyMentalHealth_clean$anonymity)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$anonymity), 
+        main="Privacidad de beneficios sobre enfermedades mentales")
+``` 
+**leave**
+  
+```{r}
+levels(surveyMentalHealth_clean$leave)
+```
+
+
+ 
+```{r}
+summary (surveyMentalHealth_clean$leave)
+
+```
+
+```{r }
+barplot(table(surveyMentalHealth_clean$leave), 
+        main="Posibilidad de baja en enfermedades mentales")
+``` 
+**mental_health_consequence**
+  
+```{r}
+levels(surveyMentalHealth_clean$mental_health_consequence)
+```
+
+
+ 
+```{r}
+summary (surveyMentalHealth_clean$mental_health_consequence)
+
+```
+ Consideramos *Maybe* como una unica categoria agrupada a la nueva categoria *Si* 
+
+```{r}
+surveyMentalHealth_clean$mental_health_consequence<- combineLevels(surveyMentalHealth_clean$mental_health_consequence,levs = c('Maybe'), newLabel = c("Yes"))
+
+```
+
+
+
+```{r}
+levels(surveyMentalHealth_clean$mental_health_consequence)
+
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_health_consequence)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_consequence), 
+        main="Consecuencias por hablar de salud mental")
+``` 
+
+**phys_health_consequence**
+
+```{r}
+levels(surveyMentalHealth_clean$phys_health_consequence)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$phys_health_consequence)
+
+```
+
+```{r}
+surveyMentalHealth_clean$phys_health_consequence<- combineLevels(surveyMentalHealth_clean$phys_health_consequence,levs = c("Maybe"), newLabel = c("Yes"))
+
+```
+
+```{r}
+summary (surveyMentalHealth_clean$phys_health_consequence)
+
+```
+
+
+```{r}
+barplot(table(surveyMentalHealth_clean$phys_health_consequence), 
+        main="Consecuencias por hablar de salud física")
+``` 
+
+**coworkers**
+   
+```{r}
+levels(surveyMentalHealth_clean$coworkers)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$coworkers)
+
+```
+
+```{r}
+surveyMentalHealth_clean$coworkers<- combineLevels(surveyMentalHealth_clean$coworkers,levs = c("Some of them"), newLabel = c("Yes"))
+
+```
+
+```{r}
+summary (surveyMentalHealth_clean$coworkers)
+
+```
+
+
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_consequence), 
+        main="Hablaria de salud mental con compañeros")
+``` 
+
+**supervisor**
+```{r}
+levels(surveyMentalHealth_clean$supervisor)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$supervisor)
+
+```
+
+```{r}
+surveyMentalHealth_clean$supervisor<- combineLevels(surveyMentalHealth_clean$supervisor,levs = c("Some of them"), newLabel = c("Yes"))
+
+```
+
+```{r}
+summary (surveyMentalHealth_clean$supervisor)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$supervisor), 
+        main="Hablaria de salud mental con su jefe")
+``` 
+
+**mental_health_interview**
+
+```{r}
+levels(surveyMentalHealth_clean$mental_health_interview)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_health_interview)
+
+```
+
+
+```{r}
+surveyMentalHealth_clean$mental_health_interview<- combineLevels(surveyMentalHealth_clean$mental_health_interview,levs = c("Maybe"), newLabel = c("Yes"))
+
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_health_interview)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_interview), 
+        main="Hablaria de salud mental en una entrevista laboral")
+``` 
+**phys_health_interview**
+```{r}
+levels(surveyMentalHealth_clean$phys_health_interview)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$phys_health_interview)
+
+```
+
+```{r}
+surveyMentalHealth_clean$phys_health_interview<- combineLevels(surveyMentalHealth_clean$phys_health_interview,levs = c("Maybe"), newLabel = c("Yes"))
+
+```
+```{r}
+summary (surveyMentalHealth_clean$phys_health_interview)
+
+```
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_interview), 
+        main="Hablaria de salud física en una entrevista laboral")
+``` 
+**mental_vs_physical**
+
+```{r}
+levels(surveyMentalHealth_clean$mental_vs_physical)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_vs_physical)
+
+```
+
+```{r}
+surveyMentalHealth_clean$mental_vs_physical<- combineLevels(surveyMentalHealth_clean$mental_vs_physical,levs = c("Don't know"), newLabel = c("Yes"))
+
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_vs_physical)
+
+```
+
+```{r }
+barplot(table(surveyMentalHealth_clean$mental_vs_physical), 
+        main="Importacia en la Organizacion de la salud mental sobre la física")
+``` 
+
+**obs_consequence**
+
+```{r}
+levels(surveyMentalHealth_clean$obs_consequence)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$obs_consequence)
+
+```
+
+
+```{r}
+barplot(table(surveyMentalHealth_clean$obs_consequence), 
+        main="Consecuencias laboral por padecer enfermedad mental ")
+``` 
+
+#3. Análisis de los datos
+##3.1 Selección de los grupos de datos que se quieren analizar/comparar
+Vamos a investigar:
+-El hecho de recibir tratamiento tiene algo que ver con la edad, es decir, si existen diferencias en la variable Age según la variable treatment (Tratamiento)
+-Dependiendo de la edad del individuo como percibe este el hecho de que la organización de igual importancia a la salud mental vs salud física, es decir, si existen diferencias en la variable Age según la variable mental_vs_physical
+
+##3.2 Comprobación de la normalidad y homogeneidad de la varianza. Si es necesario (y posible), aplicar transformaciones que normalicen los datos.
+El analisis de la normalidad o contrastes de normalidad, investigan cuanto de lejos esta la distribución de los valores observados con respecto a una distribución normal con la misma media y desviación típica.
+Para este analisis inicialmente podemos realizar unos estudios de manera gráfica.
+Vamos a comenzar observando si existe diferencias significativa según la edad del individuo para pensar que la organización da igual importancia a la salud mental o a la salud fisica.
+Por lo tanto, tenemos un conjunto de la variable edad donde consideran que la organizacion da mayor importancia a la salud mental vs salud fisica y otro conjunto de la variable edad donde consideran que la organización no da mayor importancia a la salud mental vs salud fisica.
+Comencemos con el analisis de la normalidad para el conjunto de valores de la variable Edad que consideran que la organización da mayor importancia a la salud mental vs salud fisica.
+
+```{r}
+#Conjunto de valores de la variable Edad que consideran que la organización da mayor importancia a la salud mental vs salud fisica.
+Age_Mental<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$mental_vs_physical=="Yes")
+```
+
+```{r}
+Age_Fisica<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$mental_vs_physical=="No")
+```
+
+Cálculo de la media
+```{r}
+#Calculo Media
+mean(Age_Mental)
+mean(Age_Fisica)
+```
+Cálculo de la mediana
+```{r}
+#Calculo Mediana
+median(Age_Mental)
+median(Age_Fisica)
+```
+Cálculo de los cinco números de Tukey (Mínimo, Q1, Mediana, Q3 y Máximo)
+```{r}
+#Sumario de los cinco números (Mínimo, Q1, Mediana, Q3, Maximo)
+fivenum(Age_Mental)
+```
+```{r}
+#Sumario de los cinco números (Mínimo, Q1, Mediana, Q3, Maximo)
+fivenum(Age_Fisica)
+```
+
+Gráfico de Boxplot
+```{r}
+#Diagrama de caja (Boxplot)
+boxplot(Age_Mental, main="Box Plot Age Salud Mental")
+```
+En un gráfico de Boxplot podemos estudiar la simetría, detectar outlier e incluso contrastar algunas hipótesis de la distribución. El gráfico fracciona los datos en 4 partes de igual frecuencia, es decir, cada grupo contiene mas o menos el mismo número de observaciones. Pero la ocupación de estos es diferente.El primer grupo(desde el valor mas pequeño hasta Q1) los valores de la variable Age va desde 18 hasta 27. El último grupo va (desde Q3 hasta el máximo valor) desde 36 hasta 72. Podemos observar que la longitud desde el mínimo hasta Q1 es diferente a la de Q3 al máximo, por lo que podemos decir que no existe simetria con respecto a la mediana, por tanto podemos hablar de asimetria. El 50% de los individuos observados tienen Age entre Q1 y Q3.
+
+```{r}
+#Diagrama de caja (Boxplot)
+boxplot(Age_Mental, main="Box Plot Age Salud Fisica")
+```
+En un gráfico de Boxplot podemos estudiar la simetría, detectar outlier e incluso contrastar algunas hipótesis de la distribución. El gráfico fracciona los datos en 4 partes de igual frecuencia, es decir, cada grupo contiene mas o menos el mismo número de observaciones. Pero la ocupación de estos es diferente.El primer grupo(desde el valor mas pequeño hasta Q1) los valores de la variable Age va desde 18 hasta 27. El último grupo va (desde Q3 hasta el máximo valor) desde 37 hasta 61. Podemos observar que la longitud desde el mínimo hasta Q1 es diferente a la de Q3 al máximo, por lo que podemos decir que no existe simetria con respecto a la mediana, por tanto podemos hablar de asimetria. El 50% de los individuos observados tienen Age entre Q1 y Q3.
+
+
+
+Realizamos una representación de un histograma y superponemos una curva normal o función de densidad estimada para que se pueda ver la forma de la gráfica.
+Representamos el histograma de la variable Age de la muestra. Para calcular el número de clases
+que necesitamos realizamos el siguiente cálculo $k=1+3,3*log(n)$ ó $k=\sqrt(n)$. 
+```{r}
+#Calculamos el numero de intervalor
+k_Age_Mental<- round(sqrt(length(Age_Mental)))
+k_Age_Mental
+```
+```{r}
+#Calculamos el numero de intervalor
+k_Age_Fisica<- round(sqrt(length(Age_Fisica)))
+k_Age_Fisica
+```
+
+```{r chunck31}
+hist(Age_Mental ,main="Edad individuos con Organizacion mas valor a la Salud Mental",
+     breaks=k_Age_Mental, col="blue")
+```
+
+```{r chunck31}
+hist(Age_Fisica ,main="Edad individuos con Organizacion mas valor a la Salud Fisica",
+     breaks=k_Age_Fisica, col="blue")
+```
+Obtenemos de los datos observados en el histograma
+
+Los valores utilizados para dibujar el histograma son:
+$breaks Información de los extremos de los intervalos
+$counts Información de las frecuencias absolutas
+$mids Información de los valores de las marcas de las clases (puntos medios)
+
+```{r}
+hh_Age_Mental<-hist(Age_Mental ,main="Edad individuos con Organizacion mas valor a la Salud Mental",
+     breaks=k_Age_Mental, col="blue")
+hh_Age_Mental
+```
+
+```{r}
+hh_Age_Fisica<-hist(Age_Fisica ,main="Edad individuos con Organizacion mas valor a la Salud Fisica",
+     breaks=k_Age_Fisica, col="blue")
+hh_Age_Fisica
+```
+Superponemos la gráfica de la función de la densidad 
+
+```{r}
+#Calculo de la función de densidad
+den_Age_Mental<- density(Age_Mental)
+plot(den_Age_Mental ,main="Densidad de la edad de los individuos observados")
+polygon(den_Age_Mental , col="blue", border="red")
+
+```
+```{r}
+#Calculo de la función de densidad
+den_Age_Fisica<- density(Age_Fisica)
+plot(den_Age_Fisica ,main="Densidad de la edad de los individuos observados")
+polygon(den_Age_Fisica , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_Mental ,main="Edad individuos Organizacion Salud Mental",
+     col="gold",freq=FALSE)
+lines(den_Age_Mental,col="blue",lwd=4)
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_Fisica ,main="Edad Individuos Organizacion Salud Fisica",
+     col="gold",freq=FALSE)
+lines(den_Age_Mental ,col="blue",lwd=4)
+```
+Vamos a utilizar tambien el gráfico de los cuantiles teóricos (Graficos Q-Q). Estos consisten en la comparación de los cuantiles de la distribución observada con los cuantiles teóricos de la distribución normal. Cuanto más se asemejen a una normal, mas alineados están los puntos a una recta.
+```{r}
+qqnorm(Age_Mental)
+qqline(Age_Mental)
+```
+```{r}
+qqnorm(Age_Fisica)
+qqline(Age_Fisica)
+```
+
+Realizamos el estudio de la normalidad mediante los contraste de hipótesis. 
+Tenemos diferentes test de hipótesis:
+
+-Test de Shapiro-Wilk: Para muestras de tamaño menor de 50
+
+-Test de Kolmogorov-Smirnov
+
+-Lillefors:Da por hecho que la media y la varianza son desconocidas. Se considera que cuando tenemos muestras con tamaño superior a 50 es la alternativa de Shapiro-Wilk
+
+-Test Jarque-Bera: Esta da valor a la alejania que existe entre los coeficientes de asimetria y curtosis de los esperados por una distribución normal.
+
+Todos estos test tenemos como hipotesis nula que los datos proceden de una distribución normal y la hipótesis alternativa que no lo hacen. El $p_{value}$ nos da la probabilidad de tener una distribución como la observada siempre y cuando los datos proceden de una población con distribución normal. Al estar hablando de $p_{value}$, hay que tener en cuenta que a mayor tamaño de la muestra más finos son los test y es mas sencillo encontrar evidencias en contra de $H_{o}$. De igual manera, a mayor tamaño de la muestra menos sensibles son los test paramétricos en falta de normalidad.
+No realizamos el test de Shapiro-Wilk ya que nuestra muestra tiene un tamaño mayor a 50.
+Vamos a utilizar el test de Kolmogorov-Smirnov, para estudiar si una muestra proviene de una población con una distribución de media y desviación típica especifica.
+
+```{r}
+ks.test(x=Age_Mental,"pnorm", mean(Age_Mental), sd(Age_Fisica))
+```
+
+```{r}
+ks.test(Age_Fisica,"pnorm", mean(Age_Fisica), sd(Age_Fisica))
+```
+Como ya hemos dicho anteriormente el test de Kolmogorov-Smirnov acepta que conoce la media y varianza poblacional, lo que hace que dicho test sea conservador y poco potente. Asi tenemos el test de Lilliefors, en este caso se acepta que la media y la varianza son desconocidas. 
+
+```{r}
+
+lillie.test((x=Age_Mental))
+```
+
+```{r}
+
+lillie.test((x=Age_Fisica))
+```
+Podemos tener en cuenta tambien el test de normalidad de Jarque-Bera, este no pide estimación de los parámetros con los que podemos caracterizar una normal. Este lo que hace es saber lo que se alejan los coeficientes de asimetria y curtosis de una distribución normal.
+
+
+```{r}
+jb.norm.test(x=Age_Mental)
+```
+
+```{r}
+jb.norm.test(x=Age_Fisica)
+```
+Si no podemos asumir normalidad este hecho nos influira en los test de hipótesis paramétricos y en los modelos de regresion luego los estimadores calculados por mínimos cuadrados no seran eficientes y tanto los intervalosde confianza de los parámetros del modelo como constrantes significativos serán unicamente aproximados y nos exactos.
+Si tenemos en cuenta el teorema del límite central el cual necesita que las poblacion de las que procede la muestra sea una normal, no las muestras. Si la muestra se distribuye según una normal esta claro que la población tambien lo hara. Puede ocurrir que la muestra no se distribuye segun una norma pero si conocemos que la población se distribuye segun una normal, entonces los contrastes parámetricos si son válidos. El Teorema del Limite Central permite simplificar los requisitos de normalidad cuando las muestras son grandes.
+
+Procedemos a rechazar la hipotesis nula de normalidad ya que en todos los test obtenemos un $p_{value}$<0.05
+
+
+Vamos a realizar la transformación $y=\sqrt\sqrt(1/x)$. 
+```{r}
+Age_Mental_Trans<-(sqrt(sqrt(1/Age_Mental)))
+```
+
+```{r}
+#Calculo de la función de densidad
+den_Age_Mental_Trans<- density(Age_Mental_Trans)
+plot(den_Age_Mental_Trans ,main="Densidad de la edad de los individuos observados")
+polygon(den_Age_Mental_Trans , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_Mental_Trans ,main="Histograma y densidad del valor de la edad de los individuos observados",
+     col="gold",freq=FALSE)
+lines(den_Age_Mental_Trans ,col="blue",lwd=4)
+```
+
+```{r}
+qqnorm(Age_Mental_Trans)
+qqline(Age_Mental_Trans)
+```
+```{r}
+
+lillie.test((x=Age_Mental_Trans))
+```
+```{r}
+Age_Fisica_Trans<-(sqrt(sqrt(1/Age_Fisica)))
+```
+
+```{r}
+#Calculo de la función de densidad
+den_Age_Fisica_Trans<- density(Age_Fisica_Trans)
+plot(den_Age_Fisica_Trans ,main="Densidad de la edad de los individuos observados")
+polygon(den_Age_Fisica_Trans , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_Fisica_Trans ,main="Histograma y densidad del valor de la edad de los individuos observados",
+     col="gold",freq=FALSE)
+lines(den_Age_Fisica_Trans ,col="blue",lwd=4)
+```
+
+
+
+```{r}
+#Calculo de la función de densidad
+den_Age_Fisica_Trans<- density(Age_Fisica_Trans)
+plot(den_Age_Fisica_Trans ,main="Densidad de la edad de los individuos observados")
+polygon(den_Age_Fisica_Trans , col="blue", border="red")
+
+```
+
+```{r}
+qqnorm(Age_Fisica_Trans)
+qqline(Age_Fisica_Trans)
+```
+
+```{r}
+
+lillie.test((x=Age_Fisica_Trans))
+```
+
+A continuación estudiamos la homogeneidad de la varianza u homocedasticidad, se esta considerando que la varianza es constante en los diferentes niveles.
+Tenemos diferentes test para evaluar la distribución de la varianza. En todos ellos estamos considerando como hipotesis nula que la varianza es la misma en todos los grupos y como hipótesis alternativa que no lo es.
+
+-F-Test. Razón de varianzas: Es recomendado siempres y cuando se tenga la certeza de que las poblaciones se distribuyen con normalidad. Luego es muy sensible en caso de no cumplir normalidad
+
+-Test de Levene: Se puede utilizar en el caso de tener mas de dos poblaciones. Permite elegir entre diferentes estadisticos de centralidad. Lo cual tiene relevancia a la hora de realizar el contraste de homocedasticidad segun se tenga distribuciones normales o no.
+
+-Test de Bartlett: Es muy sensible si no existe normalidad. Permite realizar el contraste para muestras de diferente tamaño.
+
+-Test de Brown-Forsyth: Se basa en el test de Levene pero unicamente se utiliza la mediana como medida de centralidad.
+
+-Test de Fligner-Killeen: Es el idoneo cuando no se cumple la condición de normalidad en las poblaciones. Es un test no paramétrico donde la comparativa de las varianzas se realizan basandonos en la mediana.
+
+Al tener muestras de diferentes tamaño utilizaremos el test de Bartlett, aunque teniendo en cuenta los resultados anteriormente no seria el mas idoneo ya que este es muy sensible si no existe normalidad.
+
+```{r}
+bartlett.test(list(Age_Mental,Age_Fisica))
+```
+
+Podemos concluir que el test no haya diferencias significativas entre las varianzas de los dos grupos.
+
+```{r}
+ggplot(surveyMentalHealth_clean, aes(x = mental_vs_physical, y = Age, colour =mental_vs_physical)) + geom_boxplot() + theme_bw()
+```
+Vamos a continuar observando si existe diferencias significativa según la edad del individuo de haber recibido o no tratamiento.
+Por lo tanto, tenemos un conjunto de la variable edad donde se ha recibido tratamiento asociado a la salud mental y otro conjunto de la variable edad donde no se ha recibido tratamiento asociado a la salud mental.
+Comenzamos con el análisis de la normalidad para el conjunto de valores de la variable Age que han recibido tratamiento relacionado con la salud mental.
+
+```{r}
+#Conjunto de valores de la variable Edad que consideran que la organización da mayor importancia a la salud mental vs salud fisica.
+Age_Tratamiento<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$treatment=="Yes")
+```
+Y el conjunto de valores de la variable Age que no han recibido tratamiento relacionado con la salud física.
+```{r}
+Age_NTratamiento<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$treatment=="No")
+```
+
+Cálculo de la media
+```{r}
+#Calculo Media
+mean(Age_Tratamiento)
+mean(Age_NTratamiento)
+```
+Cálculo de la mediana
+```{r}
+#Calculo Mediana
+median(Age_Tratamiento)
+median(Age_NTratamiento)
+```
+Cálculo de los cinco números de Tukey (Mínimo, Q1, Mediana, Q3 y Máximo)
+```{r}
+#Sumario de los cinco números (Mínimo, Q1, Mediana, Q3, Maximo)
+fivenum(Age_Tratamiento)
+```
+
+```{r}
+#Sumario de los cinco números (Mínimo, Q1, Mediana, Q3, Maximo)
+fivenum(Age_NTratamiento)
+```
+
+Gráfico de Boxplot
+```{r}
+#Diagrama de caja (Boxplot)
+boxplot(Age_Tratamiento, main="Box Plot Age Con Tratamiento")
+```
+En un gráfico de Boxplot podemos estudiar la simetría, detectar outlier e incluso contrastar algunas hipótesis de la distribución. El gráfico fracciona los datos en 4 partes de igual frecuencia, es decir, cada grupo contiene mas o menos el mismo número de observaciones. Pero la ocupación de estos es diferente.El primer grupo(desde el valor mas pequeño hasta Q1) los valores de la variable Age va desde 18 hasta 27. El último grupo va (desde Q3 hasta el máximo valor) desde 37 hasta 72. Podemos observar que la longitud desde el mínimo hasta Q1 es diferente a la de Q3 al máximo, por lo que podemos decir que no existe simetria con respecto a la mediana, por tanto podemos hablar de asimetria. El 50% de los individuos observados tienen Age entre Q1 y Q3.
+
+```{r}
+#Diagrama de caja (Boxplot)
+boxplot(Age_NTratamiento, main="Box Plot Age Sin Tratamiento")
+```
+En un gráfico de Boxplot podemos estudiar la simetría, detectar outlier e incluso contrastar algunas hipótesis de la distribución. El gráfico fracciona los datos en 4 partes de igual frecuencia, es decir, cada grupo contiene mas o menos el mismo número de observaciones. Pero la ocupación de estos es diferente.El primer grupo(desde el valor mas pequeño hasta Q1) los valores de la variable Age va desde 18 hasta 27. El último grupo va (desde Q3 hasta el máximo valor) desde 35 hasta 75. Podemos observar que la longitud desde el mínimo hasta Q1 es diferente a la de Q3 al máximo, por lo que podemos decir que no existe simetria con respecto a la mediana, por tanto podemos hablar de asimetria. El 50% de los individuos observados tienen Age entre Q1 y Q3.
+
+
+
+Realizamos una representación de un histograma y superponemos una curva normal o función de densidad estimada para que se pueda ver la forma de la gráfica.
+Representamos el histograma de la variable Age de la muestra. Para calcular el número de clases
+que necesitamos realizamos el siguiente cálculo $k=1+3,3*log(n)$ ó $k=\sqrt(n)$. 
+```{r}
+#Calculamos el numero de intervalor
+k_Age_Tratamiento<- round(sqrt(length(Age_Tratamiento)))
+k_Age_Tratamiento
+```
+
+```{r}
+#Calculamos el numero de intervalor
+k_Age_NTratamiento<- round(sqrt(length(Age_NTratamiento)))
+k_Age_NTratamiento
+```
+
+```{r chunck31}
+hist(Age_Tratamiento ,main="Edad individuos con Tratamiento Salud Mental",
+     breaks=k_Age_Tratamiento, col="blue")
+```
+
+```{r chunck31}
+hist(Age_NTratamiento ,main="Edad individuos sin Tratamiento Salud Mental",
+     breaks=k_Age_NTratamiento, col="blue")
+```
+Obtenemos de los datos observados en el histograma
+
+Los valores utilizados para dibujar el histograma son:
+$breaks Información de los extremos de los intervalos
+$counts Información de las frecuencias absolutas
+$mids Información de los valores de las marcas de las clases (puntos medios)
+
+```{r}
+hh_Age_Tratamiento<-hist(Age_Tratamiento ,main="Edad individuos con Tratamiento Salud Mental",
+     breaks=k_Age_Tratamiento, col="blue")
+hh_Age_Tratamiento
+```
+
+```{r}
+hh_Age_NTratamiento<-hist(Age_NTratamiento ,main="Edad individuos sin Tratamiento Salud Mental",
+     breaks=k_Age_NTratamiento, col="blue")
+hh_Age_NTratamiento
+```
+Superponemos la gráfica de la función de la densidad 
+
+```{r}
+#Calculo de la función de densidad
+den_Age_Tratamiento<- density(Age_Tratamiento)
+plot(den_Age_Tratamiento ,main="Densidad de la edad de los individuos con Tratamiento")
+polygon(den_Age_Tratamiento , col="blue", border="red")
+
+```
+
+```{r}
+#Calculo de la función de densidad
+den_Age_NTratamiento<- density(Age_NTratamiento)
+plot(den_Age_NTratamiento ,main="Densidad de la edad de los individuos observados sin Tratamiento")
+polygon(den_Age_NTratamiento , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_Tratamiento ,main="Edad individuos con Tratamiento de  Salud Mental",
+     col="gold",freq=FALSE)
+lines(den_Age_Tratamiento,col="blue",lwd=4)
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_NTratamiento ,main="Edad Individuos sin tratamiento de Salud Mental",
+     col="gold",freq=FALSE)
+lines(den_Age_NTratamiento ,col="blue",lwd=4)
+```
+Vamos a utilizar tambien el gráfico de los cuantiles teóricos (Graficos Q-Q). 
+```{r}
+qqnorm(Age_Tratamiento)
+qqline(Age_Tratamiento)
+```
+
+```{r}
+qqnorm(Age_NTratamiento)
+qqline(Age_NTratamiento)
+```
+
+```{r}
+ks.test(x=Age_Tratamiento,"pnorm", mean(Age_Tratamiento), sd(Age_Tratamiento))
+```
+
+```{r}
+ks.test(Age_NTratamiento,"pnorm", mean(Age_NTratamiento), sd(Age_NTratamiento))
+```
+
+
+```{r}
+
+lillie.test((x=Age_Tratamiento))
+```
+
+```{r}
+
+lillie.test((x=Age_NTratamiento))
+```
+Podemos tener en cuenta tambien el test de normalidad de Jarque-Bera
+
+```{r}
+jb.norm.test(x=Age_Tratamiento)
+```
+
+```{r}
+jb.norm.test(x=Age_NTratamiento)
+```
+
+Procedemos a rechazar la hipotesis nula de normalidad ya que en todos los test obtenemos un $p_{value}$<0.05
+
+
+Vamos a realizar la transformación $y=\sqrt(1/x)$. 
+```{r}
+Age_Tratamiento_Trans<-((sqrt(1/Age_Tratamiento)))
+```
+
+```{r}
+#Calculo de la función de densidad
+den_Age_Tratamiento_Trans<- density(Age_Tratamiento_Trans)
+plot(den_Age_Tratamiento_Trans ,main="Densidad de la edad de los individuos observados")
+polygon(den_Age_Tratamiento_Trans , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_Tratamiento_Trans ,main="Histograma y densidad del valor de la edad de los individuos observados",
+     col="gold",freq=FALSE)
+lines(den_Age_Tratamiento_Trans ,col="blue",lwd=4)
+```
+
+```{r}
+qqnorm(Age_Tratamiento_Trans)
+qqline(Age_Tratamiento_Trans)
+```
+```{r}
+
+lillie.test((x=Age_Tratamiento_Trans))
+```
+
+
+```{r}
+Age_NTratamiento_Trans<-((sqrt(1/Age_NTratamiento)))
+```
+
+```{r}
+#Calculo de la función de densidad
+den_Age_NTratamiento_Trans<- density(Age_NTratamiento_Trans)
+plot(den_Age_NTratamiento_Trans ,main="Densidad de la edad de los individuos sin Tratamiento")
+polygon(den_Age_NTratamiento_Trans , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_NTratamiento_Trans ,main="Histograma y densidad del valor de la edad de los individuos sin Tratamiento",
+     col="gold",freq=FALSE)
+lines(den_Age_NTratamiento_Trans ,col="blue",lwd=4)
+```
+
+
+
+```{r}
+#Calculo de la función de densidad
+den_Age_NTratamiento_Trans<- density(Age_NTratamiento_Trans)
+plot(den_Age_NTratamiento_Trans ,main="Densidad de la edad de los individuos sin Tratamiento")
+polygon(den_Age_NTratamiento_Trans , col="blue", border="red")
+
+```
+
+```{r}
+qqnorm(Age_NTratamiento_Trans)
+qqline(Age_NTratamiento_Trans)
+```
+
+```{r}
+
+lillie.test((x=Age_NTratamiento_Trans))
+```
+
+A continuación estudiamos la homogeneidad de la varianza u homocedasticidad.
+```{r}
+bartlett.test(list(Age_Tratamiento,Age_NTratamiento))
+```
+Podemos concluir que el test si haya diferencias significativas entre las varianzas de los dos grupos.
+
+```{r}
+ggplot(surveyMentalHealth_clean, aes(x = treatment, y = Age, colour =treatment)) + geom_boxplot() + theme_bw()
+```
+
+##3.3 Aplicación de pruebas estadísticas (tantas como sea posible) para comparar los grupos de datos.
+
+Vamos a realizar el estudio ANOVA de un factor (one-way ANOVA o independent samples ANOVA) para investigar si existen diferencias en la edad entre los individuos que han tenido tramiento o no de salud mental.
+
+```{r}
+fit=lm(Age~ treatment, surveyMentalHealth_clean)
+aov(fit)
+```
+
+```{r}
+summary(aov(fit))
+```
+
+En este caso hemos encontrado cambio significativa de la variable treatment (si han recibido o no tratamiento relacionado con la salud mental) ya que el $p_{value}$ ha sido menor que 0.05
+
+Continuamos con el estudio ANOVA de un factor (one-way ANOVA o independent samples ANOVA) para investigar si existen diferencias en la edad entre los individuos que consideran que las empresas le dan mas importancia a la salud mental vs salud fisica.
+
+```{r}
+fit2=lm(Age~ mental_vs_physical, surveyMentalHealth_clean)
+aov(fit2)
+```
+
+```{r}
+summary(aov(fit2))
+```
+En este caso no hemos encontrado ningún cambio significativa de la variable mental_vs_physical ya que el $p_{value}$ ha sido mayor que 0.05
+
+
+
+
+
