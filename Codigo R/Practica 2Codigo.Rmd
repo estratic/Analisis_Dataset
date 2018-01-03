@@ -1,0 +1,690 @@
+---
+title: "PRACTICA 2"
+author: ""
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load_libraries, include=FALSE}
+library(knitr)
+
+```
+
+
+```{r}
+library(rockchalk)
+library(nortest)
+library(normtest)
+library(moments)
+library(car)
+library(ggplot2)
+library(dplyr)
+```
+
+
+Cargamos los datos
+getwd()
+setwd("C:/Users/David&Sonix/Downloads/Tipologia de Datos/Practica 2/Resolucion Final")
+
+
+
+```{r read}
+surveyMentalHealth<-read.csv("survey.csv", sep=",",na.strings = "NA")
+#Mostramos las primeras filas
+head(surveyMentalHealth) 
+```
+
+
+ 
+
+```{r}
+#Eliminación de las variables
+surveyMentalHealth$Timestamp<-NULL
+surveyMentalHealth$state<-NULL
+surveyMentalHealth$comments<-NULL
+#summary(surveyMentalHealth)
+```
+
+```{r}
+colnames(surveyMentalHealth)
+```
+
+
+```{r str}
+str(surveyMentalHealth) 
+```
+
+
+  
+```{r }
+#Número de fila del fichero. 
+nrow(surveyMentalHealth)
+```
+
+
+
+```{r}
+sapply(surveyMentalHealth,class)
+```
+
+
+```{r}
+#En el momento de la lectura del fichero establecemos 
+#que si se encuenta un valor perdido los asigne por NA (na.strings = "NA")
+table(is.na(surveyMentalHealth$Age))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$Gender))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$Country ))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$self_employed))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$family_history))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$treatment))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$work_interfere))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$no_employees))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$remote_work))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$tech_company))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$benefits))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$care_options))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$ wellness_program))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$seek_help))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$anonymity))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$leave))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$mental_health_consequence))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$phys_health_consequence))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$coworkers))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$supervisor))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$mental_health_interview))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$phys_health_interview))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$mental_vs_physical))
+```
+
+```{r}
+table(is.na(surveyMentalHealth$obs_consequence))
+```
+
+
+```{r}
+surveyMentalHealth$Age[which(surveyMentalHealth$Age==0) ]
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth$Age))
+```
+
+
+
+```{r}
+datos_atipicos<-subset(surveyMentalHealth[1:1], surveyMentalHealth$Age<16 | surveyMentalHealth$Age>75)
+datos_atipicos
+```
+
+
+```{r}
+surveyMentalHealth_clean<-subset(surveyMentalHealth, surveyMentalHealth$Age>16 & surveyMentalHealth$Age<75)
+nrow(surveyMentalHealth_clean)
+```
+
+
+
+```{r}
+summary(surveyMentalHealth_clean$Age)
+```
+
+```{r}
+boxplot(surveyMentalHealth_clean$Age)
+```
+
+```{r}
+#Media Aritmetica 
+Media_Age<-mean(surveyMentalHealth_clean$Age)
+#Mediana
+Mediana_Age<-median(surveyMentalHealth_clean$Age)
+#Media Recortada
+Media_Recortada_Age<-mean(surveyMentalHealth_clean$Age, trim=0.05)
+#Desviación estándar
+Desviacion_estandar_Age<-sd(surveyMentalHealth_clean$Age)
+#Rango Intercuartilico (RIC)
+RIC_Age<-IQR(surveyMentalHealth_clean$Age)
+#Desviación Absoluta Respecto de la Mediana
+Desviacion_Absoluta_Mediana_Age<-mad(surveyMentalHealth_clean$Age)
+#Tabla 
+kable(rbind(Media_Age,Mediana_Age,Media_Recortada_Age,
+            Desviacion_estandar_Age,RIC_Age,
+            Desviacion_Absoluta_Mediana_Age))
+```
+
+
+
+```{r}
+levels(surveyMentalHealth_clean$Gender)
+```
+
+
+```{r}
+surveyMentalHealth_clean$Gender<-as.character(surveyMentalHealth_clean$Gender)
+surveyMentalHealth_clean$Gender<-replace(surveyMentalHealth_clean$Gender,surveyMentalHealth_clean$Gender=="Cis Female"|surveyMentalHealth_clean$Gender=="cis-female/femme"|surveyMentalHealth_clean$Gender=="f"|surveyMentalHealth_clean$Gender=="femail"|surveyMentalHealth_clean$Gender=="Femake"|surveyMentalHealth_clean$Gender=="female"|surveyMentalHealth_clean$Gender=="Female"|surveyMentalHealth_clean$Gender=="Female "|surveyMentalHealth_clean$Gender=="Female (cis)"|surveyMentalHealth_clean$Gender=="Female (trans)"|surveyMentalHealth_clean$Gender=="Woman"|surveyMentalHealth_clean$Gender=="woman","F")
+
+surveyMentalHealth_clean$Gender<-replace(surveyMentalHealth_clean$Gender,surveyMentalHealth_clean$Gender=="Male"|surveyMentalHealth_clean$Gender=="male"|surveyMentalHealth_clean$Gender=="Cis Male"|surveyMentalHealth_clean$Gender=="m"|surveyMentalHealth_clean$Gender=="Mail"|surveyMentalHealth_clean$Gender=="Make"|surveyMentalHealth_clean$Gender=="male leaning androgynous"|surveyMentalHealth_clean$Gender=="Malr"|surveyMentalHealth_clean$Gender=="msle"|surveyMentalHealth_clean$Gender=="ostensibly male, unsure what that really means"|surveyMentalHealth_clean$Gender=="something kinda male?"|surveyMentalHealth_clean$Gender=="Androgyne"|surveyMentalHealth_clean$Gender=="cis male"|surveyMentalHealth_clean$Gender=="Cis Man"|surveyMentalHealth_clean$Gender=="Guy (-ish) ^_^"|surveyMentalHealth_clean$Gender=="maile"|surveyMentalHealth_clean$Gender=="Mal"|surveyMentalHealth_clean$Gender=="Male (CIS)"|surveyMentalHealth_clean$Gender=="Male-ish"|surveyMentalHealth_clean$Gender=="Man"|surveyMentalHealth_clean$Gender=="Male ","M")
+
+surveyMentalHealth_clean$Gender<-replace(surveyMentalHealth_clean$Gender,surveyMentalHealth_clean$Gender=="A little about you"|surveyMentalHealth_clean$Gender=="Agender"|surveyMentalHealth_clean$Gender=="All"|surveyMentalHealth_clean$Gender=="Enby"|surveyMentalHealth_clean$Gender=="fluid"|surveyMentalHealth_clean$Gender=="Genderqueer"|surveyMentalHealth_clean$Gender=="Nah"|surveyMentalHealth_clean$Gender=="Neuter"|surveyMentalHealth_clean$Gender=="non-binary"|surveyMentalHealth_clean$Gender=="p"|surveyMentalHealth_clean$Gender=="queer"|surveyMentalHealth_clean$Gender=="queer/she/they"|surveyMentalHealth_clean$Gender=="Trans woman"|surveyMentalHealth_clean$Gender=="Trans-female",NA)
+
+surveyMentalHealth_clean$Gender<-as.factor(surveyMentalHealth_clean$Gender)
+```
+
+
+```{r}
+levels(surveyMentalHealth_clean$Gender)
+```
+
+
+```{r}
+surveyMentalHealth_clean<-subset(surveyMentalHealth_clean, surveyMentalHealth_clean$Gender!="NA")
+nrow(surveyMentalHealth_clean)
+```
+
+
+```{r}
+levels(surveyMentalHealth_clean$Country)
+summary(surveyMentalHealth_clean$Country)
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$Country), 
+        main="Paises")
+``` 
+
+
+```{r}
+levels(surveyMentalHealth_clean$family_history)
+summary(surveyMentalHealth_clean$family_history)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$family_history), 
+        main="Antecedentes familiares")
+``` 
+
+
+```{r}
+levels(surveyMentalHealth_clean$treatment)
+summary(surveyMentalHealth_clean$treatment)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$treatment), 
+        main="Ha sido tratado de alguna enfermedad mental")
+``` 
+
+
+```{r}
+levels(surveyMentalHealth_clean$work_interfere)
+summary(surveyMentalHealth_clean$work_interfere)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$work_interfere), 
+        main="La enfermendad mental interfiere en su trabajo")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$no_employees)
+summary(surveyMentalHealth_clean$no_employees)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$no_employees), 
+        main="Número de empleados de la compañia u organizacion")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$remote_work)
+summary(surveyMentalHealth_clean$remote_work)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$remote_work), 
+        main="Teletrabajo al menos el 50% del tiempo")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$tech_company)
+summary(surveyMentalHealth_clean$tech_company)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$tech_company), 
+        main="La Organización es Tecnologica")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$benefits)
+summary(surveyMentalHealth_clean$benefits)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$benefits), 
+        main="La Organizacion provee de beneficios de salud Mental")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$care_options)
+summary(surveyMentalHealth_clean$care_options)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$care_options), 
+        main="Conoce Opciones de cuidado mental de su compañia médica")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$wellness_program)
+
+```
+
+```{r}
+summary (surveyMentalHealth_clean$wellness_program)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$wellness_program), 
+        main="Información del conocimiento de programas especificos")
+```
+ 
+```{r}
+levels(surveyMentalHealth_clean$seek_help)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$seek_help)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$seek_help), 
+        main="Información de recursos y ayuda desde la organización")
+```
+
+```{r}
+levels(surveyMentalHealth_clean$anonymity)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$anonymity)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$anonymity), 
+        main="Privacidad de beneficios sobre enfermedades mentales")
+``` 
+ 
+```{r}
+levels(surveyMentalHealth_clean$leave)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$leave)
+
+```
+
+```{r }
+barplot(table(surveyMentalHealth_clean$leave), 
+        main="Posibilidad de baja en enfermedades mentales")
+``` 
+ 
+```{r}
+levels(surveyMentalHealth_clean$mental_health_consequence)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_health_consequence)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_consequence), 
+        main="Consecuencias por hablar de salud mental")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$phys_health_consequence)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$phys_health_consequence)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$phys_health_consequence), 
+        main="Consecuencias por hablar de salud física")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$coworkers)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$coworkers)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_consequence), 
+        main="Hablaria de salud mental con compañeros")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$supervisor)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$supervisor)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$supervisor), 
+        main="Hablaria de salud mental con su jefe")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$mental_health_interview)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_health_interview)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_interview), 
+        main="Hablaria de salud mental en una entrevista laboral")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$phys_health_interview)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$phys_health_interview)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$mental_health_interview), 
+        main="Hablaria de salud física en una entrevista laboral")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$mental_vs_physical)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$mental_vs_physical)
+
+```
+
+```{r }
+barplot(table(surveyMentalHealth_clean$mental_vs_physical), 
+        main="Importacia en la Organizacion de la salud mental sobre la física")
+``` 
+
+```{r}
+levels(surveyMentalHealth_clean$obs_consequence)
+```
+
+```{r}
+summary (surveyMentalHealth_clean$obs_consequence)
+
+```
+
+```{r}
+barplot(table(surveyMentalHealth_clean$obs_consequence), 
+        main="Consecuencias laboral por padecer enfermedad mental ")
+```
+
+```{r}
+#Gráfica comparativa 1
+    par(mfrow=c(1,2))
+    barplot(table(surveyMentalHealth_clean$mental_health_interview), 
+            main="Mención mental en entrevista laboral")
+    barplot(table(surveyMentalHealth_clean$phys_health_interview), 
+            main="Mención física en entrevista laboral")
+```
+
+```{r}
+#Gráfica comparativa 2
+    par(mfrow=c(1,2))
+    barplot(table(surveyMentalHealth_clean$mental_health_consequence), 
+            main="Mental:¿consecuencias negativas?")
+    barplot(table(surveyMentalHealth_clean$phys_health_consequence), 
+            main="Física:¿consecuencias negativas?")
+```
+
+```{r}
+#Calculo Media
+mean(surveyMentalHealth_clean$Age)
+```
+
+```{r}
+#Calculo Mediana
+median(surveyMentalHealth_clean$Age)
+```
+
+```{r}
+#Sumario de los cinco números (Mínimo, Q1, Mediana, Q3, Maximo)
+fivenum(surveyMentalHealth_clean$Age)
+```
+
+```{r}
+#Diagrama de caja (Boxplot)
+boxplot(surveyMentalHealth_clean$Age, main="Box Plot Age")
+```
+
+```{r}
+#Calculamos el numero de intervalor
+k_Age<- round(sqrt(length(surveyMentalHealth_clean$Age)))
+k_Age
+```
+
+```{r}
+hist(surveyMentalHealth_clean$Age ,main="Edad individuos Observados",
+     breaks=k_Age, col="blue")
+```
+
+```{r}
+hh_Age<-hist(surveyMentalHealth_clean$Age ,main="Edad individuos con Observados",
+     breaks=k_Age, col="blue")
+hh_Age
+```
+
+```{r}
+#Calculo de la función de densidad
+den_Age<- density(surveyMentalHealth_clean$Age)
+plot(den_Age ,main="Edad Individuos con Observados")
+polygon(den_Age , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(surveyMentalHealth_clean$Age ,main="Edad individuos con Observados",
+     col="gold",freq=FALSE)
+lines(den_Age,col="blue",lwd=4)
+```
+
+```{r}
+qqnorm(surveyMentalHealth_clean$Age)
+qqline(surveyMentalHealth_clean$Age)
+```
+
+```{r}
+ks.test(x=surveyMentalHealth_clean$Age,"pnorm", mean(surveyMentalHealth_clean$Age), sd(surveyMentalHealth_clean$Age))
+```
+
+```{r}
+
+lillie.test((x=surveyMentalHealth_clean$Age))
+```
+
+```{r}
+jb.norm.test(x=surveyMentalHealth_clean$Age)
+```
+
+```{r}
+Age_Trans<-(sqrt(sqrt(1/surveyMentalHealth_clean$Age)))
+```
+
+```{r}
+#Calculo de la función de densidad
+den_Age_Trans<- density(Age_Trans)
+plot(den_Age_Trans ,main="Densidad de la edad de los individuos observados")
+polygon(den_Age_Trans , col="blue", border="red")
+
+```
+
+```{r}
+#Superposición de las gráficas
+hist(Age_Trans ,main="Histograma y densidad del valor de la edad de los individuos observados",
+     col="gold",freq=FALSE)
+lines(den_Age_Trans ,col="blue",lwd=4)
+```
+
+```{r}
+qqnorm(Age_Trans)
+qqline(Age_Trans)
+```
+
+```{r}
+
+lillie.test((x=Age_Trans))
+```
+
+```{r}
+Age_Mental<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$mental_vs_physical=="Yes")
+Age_Fisica<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$mental_vs_physical=="No")
+Age_Desconoce<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$mental_vs_physical=="Don't know")
+```
+
+```{r}
+bartlett.test(list(Age_Mental,Age_Fisica,Age_Desconoce))
+```
+
+```{r}
+ggplot(surveyMentalHealth_clean, aes(x = mental_vs_physical, y = Age, colour =mental_vs_physical)) + geom_boxplot() + theme_bw()
+```
+
+```{r}
+Age_Tratamiento<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$treatment=="Yes")
+Age_NTratamiento<-subset(surveyMentalHealth_clean$Age, surveyMentalHealth_clean$treatment=="No")
+```
+
+```{r}
+bartlett.test(list(Age_Tratamiento,Age_NTratamiento))
+```
+
+```{r}
+ggplot(surveyMentalHealth_clean, aes(x = treatment, y = Age, colour =treatment)) + geom_boxplot() + theme_bw()
+```
+
+```{r}
+kruskal.test(Age~ treatment, data=surveyMentalHealth_clean)
+```
+ 
+```{r}
+fit2=lm(Age~ mental_vs_physical, surveyMentalHealth_clean)
+aov(fit2)
+```
+
+```{r}
+summary(aov(fit2))
+```
+
+```{r}
+#Se guardan los cambios realizados en el fichero rodriguez_inmuebles_clean.csv
+write.csv(surveyMentalHealth_clean, file="survey_clean.csv")
+```
+
+
