@@ -1054,7 +1054,7 @@ En este caso no hemos encontrado ningún cambio significativa de la variable ment
 
 Se guarda todos los cambios en un fichero.
 ```{r}
-#Se guardan los cambios realizados en el fichero rodriguez_inmuebles_clean.csv
+#Se guardan los cambios realizados 
 write.csv(surveyMentalHealth_clean, file="survey_clean.csv")
 ```
 
