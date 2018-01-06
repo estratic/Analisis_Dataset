@@ -28,6 +28,7 @@ str(surveyMentalHealth)
 
 #Número de fila del fichero. 
 nrow(surveyMentalHealth)
+
 sapply(surveyMentalHealth,class)
 
 #En el momento de la lectura del fichero establecemos que si se encuenta un valor perdido los asigne por NA 
